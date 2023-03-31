@@ -17,8 +17,8 @@ from slack_sdk import WebClient
 from datetime import datetime, timedelta
 from cal_setup import get_calendar_service
 
-SLACK_TOKEN="xoxb-4827200483924-4818142455750-RsRQutTG9Jl766h3rQTb3HZN"
-SIGNING_SECRET="8b0bca5ef9d201847b4b79c98bbf7dd5"
+# SLACK_TOKEN=<SLACK_TOKEN>
+# SIGNING_SECRET=<SIGNING_SECRET>
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
@@ -81,7 +81,7 @@ def firebase_init():
         cred = credentials.Certificate('firebaseKey.json')
         #default_app = initialize_app(cred)
         firebase_admin.initialize_app(cred,{
-            'databaseURL' : 'https://focusbot-542f7.firebaseio.com'
+            # 'databaseURL' : 'databaseURL'
         })
     
 # def firebase_add():    
