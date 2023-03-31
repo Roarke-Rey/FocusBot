@@ -1,7 +1,9 @@
 from __future__ import print_function
 
-from flask import Flask
+import firebase_admin
+from flask import Flask, request, jsonify
 from slackeventsapi import SlackEventAdapter
+from firebase_admin import credentials, firestore, initialize_app
 
 import datetime
 import os.path
@@ -12,8 +14,10 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from slack_sdk import WebClient
+from datetime import datetime, timedelta
+from cal_setup import get_calendar_service
 
-SLACK_TOKEN="xoxb-4827200483924-4818142455750-7rndP438x9GV7rX2rJ6dfEyE"
+SLACK_TOKEN="xoxb-4827200483924-4818142455750-RsRQutTG9Jl766h3rQTb3HZN"
 SIGNING_SECRET="8b0bca5ef9d201847b4b79c98bbf7dd5"
 
 # If modifying these scopes, delete the file token.json.
@@ -35,14 +39,57 @@ def message(payload):
     user_id = event.get('user')
     text = event.get('text')
 
-    if text == "hi":
-        client.chat_postMessage(channel=channel_id,text="Hello")
-    elif text == "schedule":
-        ts = event.get('ts') # ts = timestamp
+    # debug
+    print('User ID: ', user_id)
+    
+    ts = event.get('ts') # ts = timestamp
+    texts=text.split()
+
+    if texts[0] == "hi":
+        client.chat_postMessage(channel=channel_id, thread_ts=ts, text="Hello")
+    elif texts[0] == "schedule":
         start_list, event_list = google_calendar()
         res = parse_result(start_list, event_list)
         print('res: ', res)
         client.chat_postMessage(channel=channel_id, thread_ts=ts, text=res)
+    elif texts[0] == "add_event":
+        # add_event 10/31/2023/10:30 team meeting
+        date=texts[1].split('/')
+        time=date[3].split(':')
+        summary=" ".join(texts[2:])
+        start=datetime(int(date[2]), int(date[0]), int(date[1]), int(time[0]), int(time[1]))
+        event_add(start, summary)
+        client.chat_postMessage(channel=channel_id,thread_ts=ts, text="Event is successfully added")
+    # elif text[0] == "add_member":
+
+
+def event_add(start, summary):
+    service = get_calendar_service()
+    start_time=start.isoformat()
+    end_time = (start + timedelta(hours=1)).isoformat()
+    calendar = {
+        'summary': summary,
+        'start': {"dateTime": start_time, 'timeZone': 'America/New_York'},
+        'end': {"dateTime": end_time, 'timeZone': 'America/New_York'}
+    }
+    # [TODO] set end_time by user's command
+    # [TODO] link firebase and find user's calendarId 
+    event_result = service.events().insert(calendarId='primary',body=calendar).execute()
+
+def firebase_init():
+    if (not len(firebase_admin._apps)):
+        cred = credentials.Certificate('firebaseKey.json')
+        #default_app = initialize_app(cred)
+        firebase_admin.initialize_app(cred,{
+            'databaseURL' : 'https://focusbot-542f7.firebaseio.com'
+        })
+    
+# def firebase_add():    
+#     db = firestore.client()
+#     collection_ref = db.collection('user')
+#     auth='team_member'
+#     calendarId=
+#     collection_ref.add({'auth':'member',})
 
 def parse_result(start_list, event_list):
     length = len(start_list)
@@ -109,3 +156,4 @@ def google_calendar():
 
 if __name__ == '__main__':
     app.run(port=5002, debug=True)
+    firebase_init()
