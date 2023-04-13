@@ -14,11 +14,12 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from slack_sdk import WebClient
-from datetime import datetime, timedelta
+import datetime
+from datetime import timedelta
 from cal_setup import get_calendar_service
 
-# SLACK_TOKEN=<SLACK_TOKEN>
-# SIGNING_SECRET=<SIGNING_SECRET>
+SLACK_TOKEN="<SLACK_TOKEN>"
+SIGNING_SECRET="<SIGNING_SECRET>"
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
@@ -34,25 +35,27 @@ client.retry_handlers.append(rate_limit_handler)
 @slack_event_adapter.on('message')
 def message(payload):
     # print(payload)
+    global previous_msg
+    global tmp_list
+    
     event = payload.get('event', {})
     channel_id = event.get('channel')
     user_id = event.get('user')
     text = event.get('text')
-
-    # debug
-    print('User ID: ', user_id)
     
     ts = event.get('ts') # ts = timestamp
     texts=text.split()
 
     if texts[0] == "hi":
+        previous_msg = texts[0]
         client.chat_postMessage(channel=channel_id, thread_ts=ts, text="Hello")
     elif texts[0] == "schedule":
-        start_list, event_list = google_calendar()
+        previous_msg = texts[0]
+        start_list, event_list, evenId_list = google_calendar()
         res = parse_result(start_list, event_list)
-        print('res: ', res)
         client.chat_postMessage(channel=channel_id, thread_ts=ts, text=res)
     elif texts[0] == "add_event":
+        previous_msg = texts[0]
         # add_event 10/31/2023/10:30 team meeting
         date=texts[1].split('/')
         time=date[3].split(':')
@@ -60,7 +63,28 @@ def message(payload):
         start=datetime(int(date[2]), int(date[0]), int(date[1]), int(time[0]), int(time[1]))
         event_add(start, summary)
         client.chat_postMessage(channel=channel_id,thread_ts=ts, text="Event is successfully added")
-    # elif text[0] == "add_member":
+    elif texts[0] == "delete_event":
+        previous_msg = "delete_event"
+        start_list, event_list, eventId_list = google_calendar()
+        tmp_list=eventId_list
+        res = "What event do you want to delete? Please input number"
+        res += parse_result(start_list, event_list)
+        client.chat_postMessage(channel=channel_id, thread_ts=ts, text=res)
+
+    if previous_msg == "delete_event":
+        print('previous_msg: ', texts[0])
+        num = int(texts[0])
+        if len(tmp_list) < num:
+            res = "Sorry, but it is out of range"
+            client.chat_postMessage(channel=channel_id, thread_ts=ts, text=res) 
+            return
+
+        service = get_calendar_service()
+        ind = num - 1
+        eventId = tmp_list[ind]
+        service.events().delete(calendarId='primary', eventId=eventId).execute()
+        res = "Successfully delete the event"  
+        client.chat_postMessage(channel=channel_id, thread_ts=ts, text=res) 
 
 
 def event_add(start, summary):
@@ -81,7 +105,7 @@ def firebase_init():
         cred = credentials.Certificate('firebaseKey.json')
         #default_app = initialize_app(cred)
         firebase_admin.initialize_app(cred,{
-            # 'databaseURL' : 'databaseURL'
+            'databaseURL' : 'https://focusbot-542f7.firebaseio.com'
         })
     
 # def firebase_add():    
@@ -95,6 +119,7 @@ def parse_result(start_list, event_list):
     length = len(start_list)
     res=""
     for i in range(length):
+        res += "[" + str(i+1) + "] "
         res += start_list[i]
         res += "\n"
         res += event_list[i]
@@ -142,13 +167,15 @@ def google_calendar():
         # Prints the start and name of the next 10 events
         start_list=[]
         event_list=[]
+        eventId_list=[]
         for event in events:
             start = event['start'].get('dateTime', event['start'].get('date'))
             start_list.append(start)
             event_list.append(event['summary'])
+            eventId_list.append(event['id'])
         print('start_list: ',start_list) 
         print('event_list: ',event_list)
-        return start_list, event_list
+        return start_list, event_list, eventId_list
 
     except HttpError as error:
         print('An error occurred: %s' % error)
