@@ -18,8 +18,8 @@ import datetime
 from datetime import timedelta, datetime
 from cal_setup import get_calendar_service
 
-SLACK_TOKEN="xoxb-4827200483924-4818142455750-y1k9cHJkjS0TtA4nsjeeN2Nz"
-SIGNING_SECRET="4dd89960cfc2a882f66bec480c753ad8"
+SLACK_TOKEN="<SLACK_TOKEN>"
+SIGNING_SECRET="<SIGNING_SECRET>"
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
