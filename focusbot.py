@@ -29,7 +29,7 @@ slack_event_adapter = SlackEventAdapter(SIGNING_SECRET, '/slack/events', app)
 client = WebClient(token=SLACK_TOKEN)
 
 from slack_sdk.http_retry.builtin_handlers import RateLimitErrorRetryHandler
-rate_limit_handler = RateLimitErrorRetryHandler(max_retry_count=0)
+rate_limit_handler = RateLimitErrorRetryHandler(max_retry_count=-1) # To prevent duplicate answer
 client.retry_handlers.append(rate_limit_handler)
 
 @slack_event_adapter.on('message')
@@ -56,7 +56,7 @@ def message(payload):
         client.chat_postMessage(channel=channel_id, thread_ts=ts, text=res)
     elif texts[0] == "add_event":
         previous_msg = texts[0]
-        # add_event 10/31/2023/10:30 team meeting
+        # [format] add_event 10/31/2023/10:30 team meeting
         date=texts[1].split('/')
         time=date[3].split(':')
         summary=" ".join(texts[2:])
@@ -67,12 +67,13 @@ def message(payload):
         previous_msg = "delete_event"
         start_list, event_list, eventId_list = google_calendar()
         tmp_list=eventId_list
-        res = "What event do you want to delete? Please input number"
+        res = "What event do you want to delete? Please input number\n"
         res += parse_result(start_list, event_list)
         client.chat_postMessage(channel=channel_id, thread_ts=ts, text=res)
-
-    if previous_msg == "delete_event":
-        print('previous_msg: ', texts[0])
+    elif previous_msg == "delete_event":
+        if texts[0] == "What":
+            return
+        previous_msg = ""
         num = int(texts[0])
         if len(tmp_list) < num:
             res = "Sorry, but it is out of range"
@@ -84,8 +85,9 @@ def message(payload):
         eventId = tmp_list[ind]
         service.events().delete(calendarId='primary', eventId=eventId).execute()
         res = "Successfully delete the event"  
-        client.chat_postMessage(channel=channel_id, thread_ts=ts, text=res) 
-
+        client.chat_postMessage(channel=channel_id, thread_ts=ts, text=res)
+    # elif texts[0] == "update_event": 
+    # [SHEAN] Updating events is necessary?
 
 def event_add(start, summary):
     service = get_calendar_service()
