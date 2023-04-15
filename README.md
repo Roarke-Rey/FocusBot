@@ -14,5 +14,5 @@ ex) add_event 10/31/2023/10:30 team meeting
 - Output (1): "What event do you want to delete? Please input number\n" message & list of upcomming 10 events
 - Input (2): number (1~10)
 - Output (2-1): the event is deleted from calendar & "Successfully delete the event" message
-- Output (2-2_: "Sorry, but it is out of range" message
+- Output (2-2): "Sorry, but it is out of range" message
 
