@@ -51,17 +51,22 @@ user2 = {
         }] 
     }]
 }
-manager1 = {
-    "Name": "Shean", 
-    "Projects": "FocusBot"
-}
+
+
+managers.child("U051B4PF5JM").push({
+    "Projects": [{
+        "Name": "FocusBot",
+        "Users": ["U056BJX4T1C","U051B4PF5JM"]
+    }]
+})
+
 # users.push(user1)
 # users.push(user2)
 # managers.push(manager1)
 
-for key, value in users.get().items():
-    if value["Name"] == "Shreyas":
-        print(value["Projects"][0]["Tasks"])
+# for key, value in users.get().items():
+#     if value["Name"] == "Shreyas":
+#         print(value["Projects"][0]["Tasks"])
         # value["Projects"].push()
 
 # .order_by_child("Due Date")

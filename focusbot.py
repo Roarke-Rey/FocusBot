@@ -14,8 +14,9 @@ from firebase_admin import db
 
 from generate import getQuote
 
-SLACK_TOKEN="<SLACK_TOKEN>"
-SIGNING_SECRET="<SIGNING_SECRET>"
+SLACK_TOKEN="xoxb-5035002541524-5018019441527-kp36azlykpHTkR7jn4Rcq2yV"
+SIGNING_SECRET="761a79d13237241be06ad0e31ada5b80"
+
 
 app = Flask(__name__)
 slack_event_adapter = SlackEventAdapter(SIGNING_SECRET, '/slack/events', app)
@@ -55,9 +56,43 @@ def message(payload):
     user_text = text
     first_word = text.split()[0]
 
+    manager_reference = db.reference("/Managers/").get()
+    manager_list = []
+    if manager_reference != None:
+        for key, value in manager_reference.items():
+            manager_list.append(key)
+
     if first_word == "hi":
         previous_msg = user_text
         client.chat_postMessage(channel=user_id, thread_ts=ts, text="Hello")
+
+    elif user_id in manager_list:
+        if first_word == "schedule":
+            project_names = get_projects_for_manager(user_id)
+            index = 1
+            response = "Please select the number for the project you want to see the schedule for:\n"
+            for project in project_names:
+                response += "[{0}] {1}".format(index, project)
+            client.chat_postMessage(channel=user_id, thread_ts=ts, text=response)
+            max_index = len(project_names)
+            previous_msg = "schedule"
+
+        elif previous_msg == "schedule" and (not user_text.startswith("Please")):
+            user_index = int(user_text.strip())
+            previous_msg = ""
+            if user_index > 0 and user_index <= max_index:
+                project_names = get_projects_for_manager(user_id)
+                project_name = project_names[user_index-1]
+                user_list = get_users_for_project(project_name, user_id)
+                response = "Found these tasks for the following users for project {}\n".format(project_name)
+                for user in user_list:
+                    response += "User: {}\n".format(user)
+                    response += get_project_schedule_from_user(project_name, user)
+                client.chat_postMessage(channel=user_id, thread_ts=ts, text=response)
+            else:
+                response = "Invalid number for the project entered"
+                client.chat_postMessage(channel=user_id, thread_ts=ts, text=response)
+            max_index = 0
 
     elif first_word == "add_event":
         previous_msg = "add_event"
@@ -179,6 +214,40 @@ def get_response_from_user_schedule(user_id):
             response += "[{0}] Project: {1}\tTask: {2}\tDue Date: {3}\n".format(index, task["ProjectName"], task["TaskName"], task["DueDate"])
             index += 1
     return response, index-1
+
+def get_project_schedule_from_user(project_name, user_id):
+    user_data = find_user_data(user_id)
+    if user_data == "":
+        response = "Did not find the user in the database"
+    elif user_data == "NA":
+        response = "No schedule found for this user"
+    else: 
+        response = ""
+        index = 1
+        for key, task in sorted(user_data.items(),key=lambda x:getitem(x[1],'DueDate')):
+            if task["ProjectName"] == project_name:
+                response += "[{0}] Task: {1}\tDue Date: {2}\n".format(index, task["TaskName"], task["DueDate"])
+                index += 1
+    if response == "":
+        response = "Did not find any tasks for this user for the project\n"
+    return response
+
+def get_projects_for_manager(user_id):
+    user_data = db.reference("/Managers/").child(user_id).get()
+    project_names = []
+    for key, value in user_data.items():
+        for project in value["Projects"]:
+            project_names.append(project["Name"])
+    return project_names
+
+def get_users_for_project(project_name, user_id):
+    user_data = db.reference("/Managers/").child(user_id).get()
+    user_list = []
+    for key, value in user_data.items():
+        for project in value["Projects"]:
+            if project["Name"] == project_name:
+                user_list = project["Users"]
+    return user_list
 
 def find_user_data(user_id):
     users = db.reference("/Users/")
