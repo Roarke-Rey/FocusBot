@@ -1,13 +1,23 @@
 from flask import Flask, request, jsonify
 from slackeventsapi import SlackEventAdapter
 
+from firebase_admin import credentials, firestore, initialize_app
+
+import datetime
+import os.path
+import pandas as pd
+
+
 from slack_sdk import WebClient
 from operator import *
 from firebase_admin import credentials, initialize_app
 from firebase_admin import db
 
-SLACK_TOKEN = "xoxb-5035002541524-5018019441527-2O7UycyHGle8xAp51vgqSryz"
-SIGNING_SECRET = "761a79d13237241be06ad0e31ada5b80"
+
+from generate import getQuote
+
+SLACK_TOKEN="<SLACK_TOKEN>"
+SIGNING_SECRET="<SIGNING_SECRET>"
 
 
 app = Flask(__name__)
@@ -18,7 +28,9 @@ from slack_sdk.http_retry.builtin_handlers import RateLimitErrorRetryHandler
 rate_limit_handler = RateLimitErrorRetryHandler(max_retry_count=-1) # To prevent duplicate answer
 client.retry_handlers.append(rate_limit_handler)
 
+
 previous_msg = ""
+
 
 @slack_event_adapter.on('message')
 def message(payload):
@@ -139,6 +151,11 @@ def firebase_init():
     initialize_app(cred, {
         "databaseURL": "https://focusbot-c6cfb-default-rtdb.firebaseio.com/"
     })
+
+
+def quotes():
+    getQuote()
+
 
 if __name__ == '__main__':
     firebase_init()
