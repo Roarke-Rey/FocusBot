@@ -1,13 +1,17 @@
 from flask import Flask, request, jsonify
 from slackeventsapi import SlackEventAdapter
 
+from firebase_admin import credentials, initialize_app
 from slack_sdk import WebClient
 from operator import *
 from firebase_admin import credentials, initialize_app
 from firebase_admin import db
 
-SLACK_TOKEN = ""
-SIGNING_SECRET = ""
+
+from generate import getQuote
+
+SLACK_TOKEN="<SLACK_TOKEN>"
+SIGNING_SECRET="<SIGNING_SECRET>"
 
 
 app = Flask(__name__)
@@ -18,6 +22,7 @@ from slack_sdk.http_retry.builtin_handlers import RateLimitErrorRetryHandler
 rate_limit_handler = RateLimitErrorRetryHandler(max_retry_count=-1) # To prevent duplicate answer
 client.retry_handlers.append(rate_limit_handler)
 
+
 previous_msg = ""
 
 '''
@@ -25,6 +30,7 @@ previous_msg = ""
  Add schedule support for managers
  Update event?
 '''
+
 @slack_event_adapter.on('message')
 def message(payload):
     global previous_msg
@@ -144,6 +150,11 @@ def firebase_init():
     initialize_app(cred, {
         "databaseURL": "https://focusbot-c6cfb-default-rtdb.firebaseio.com/"
     })
+
+
+def quotes():
+    getQuote()
+
 
 if __name__ == '__main__':
     firebase_init()
