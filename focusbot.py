@@ -1,12 +1,23 @@
 from flask import Flask, request, jsonify
 from slackeventsapi import SlackEventAdapter
 
-from firebase_admin import credentials, initialize_app
+from firebase_admin import credentials, firestore, initialize_app
+
+import datetime
+import os.path
+import pandas as pd
+
+
 from slack_sdk import WebClient
 from operator import *
 from firebase_admin import credentials, initialize_app
 from firebase_admin import db
 
+
+from generate import getQuote
+
+SLACK_TOKEN="<SLACK_TOKEN>"
+SIGNING_SECRET="<SIGNING_SECRET>"
 
 from generate import getQuote
 
@@ -150,6 +161,11 @@ def firebase_init():
     initialize_app(cred, {
         "databaseURL": "https://focusbot-c6cfb-default-rtdb.firebaseio.com/"
     })
+
+
+def quotes():
+    getQuote()
+
 
 
 def quotes():
