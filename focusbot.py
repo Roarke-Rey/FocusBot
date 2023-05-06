@@ -14,8 +14,8 @@ from firebase_admin import db
 
 from generate import getQuote
 
-SLACK_TOKEN="xoxb-5035002541524-5018019441527-kp36azlykpHTkR7jn4Rcq2yV"
-SIGNING_SECRET="761a79d13237241be06ad0e31ada5b80"
+SLACK_TOKEN=""
+SIGNING_SECRET=""
 
 
 app = Flask(__name__)
@@ -28,8 +28,8 @@ client.retry_handlers.append(rate_limit_handler)
 
 
 previous_msg = ""
-pomo = 2
-bTime = 1
+pomo = 0.5
+bTime = 0.5
 pomoActive = False
 """
 Currently Daily is set to a Boolean because our code isnt permanently hosted. We implement
@@ -41,6 +41,10 @@ daily = True
 def message(payload):
     global previous_msg
     global max_index
+    global daily
+    global pomoActive
+    global bTime
+    global pomo
     
     event = payload.get('event', {})
     channel_id = event.get('channel')
@@ -51,7 +55,7 @@ def message(payload):
     #if(daily = time.asctime(time.localtime(time.time()))):
     #    client.chat_postMessage(channel=channel_id, thread_ts=ts, text="Good Morning. Lets get our workday started with a motivational quote"+getQuote())    
     while daily:
-        client.chat_postMessage(channel=channel_id, thread_ts=ts, text="Good Morning. Lets get our workday started with a motivational quote"+getQuote())
+        client.chat_postMessage(channel=channel_id, thread_ts=ts, text="Good Morning. Lets get our workday started with a motivational quote. "+getQuote())
         daily = False
     user_text = text
     first_word = text.split()[0]
@@ -158,7 +162,6 @@ def message(payload):
     elif first_word == "pomodoro":
         if previous_msg == "activate":
             previous_msg = ""
-            print(previous_msg)
             pomoActive = True
             pomodoro(channel_id, ts)
         elif previous_msg == "deactivate":
