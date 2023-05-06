@@ -180,7 +180,7 @@ def firebase_init():
     initialize_app(cred, {
         "databaseURL": "https://focusbot-c6cfb-default-rtdb.firebaseio.com/"
     })
-    
+
 def pomodoro(channel_id, ts):
     print("pomodoro is active")
     while pomoActive:
