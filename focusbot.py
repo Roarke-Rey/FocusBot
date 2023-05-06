@@ -6,8 +6,8 @@ from operator import *
 from firebase_admin import credentials, initialize_app
 from firebase_admin import db
 
-SLACK_TOKEN = "xoxb-5035002541524-5018019441527-2O7UycyHGle8xAp51vgqSryz"
-SIGNING_SECRET = "761a79d13237241be06ad0e31ada5b80"
+SLACK_TOKEN = ""
+SIGNING_SECRET = ""
 
 
 app = Flask(__name__)
@@ -20,6 +20,11 @@ client.retry_handlers.append(rate_limit_handler)
 
 previous_msg = ""
 
+'''
+ TODO - Maybe do the DM for FocusBot? 
+ Add schedule support for managers
+ Update event?
+'''
 @slack_event_adapter.on('message')
 def message(payload):
     global previous_msg
@@ -36,12 +41,12 @@ def message(payload):
 
     if first_word == "hi":
         previous_msg = user_text
-        client.chat_postMessage(channel=channel_id, thread_ts=ts, text="Hello")
+        client.chat_postMessage(channel=user_id, thread_ts=ts, text="Hello")
 
     elif first_word == "add_event":
         previous_msg = "add_event"
         response = "Please enter the task be added in the format:\nProject_Name,TaskName,DueDate(YYYYMMDD)"
-        client.chat_postMessage(channel=channel_id, thread_ts=ts, text=response)
+        client.chat_postMessage(channel=user_id, thread_ts=ts, text=response)
          
     elif previous_msg == "add_event" and (not user_text.startswith("Please")):    # The "Please" check because slack double runs the if loop
         if (check_format(text)):
@@ -51,12 +56,12 @@ def message(payload):
             response = "Added the task successfully"
         else:
             response = "Invalid format for the task"
-        client.chat_postMessage(channel=channel_id, thread_ts=ts, text=response)
+        client.chat_postMessage(channel=user_id, thread_ts=ts, text=response)
         previous_msg = ""
 
     elif user_text == "schedule":
         response, max_index = get_response_from_user_schedule(user_id)
-        client.chat_postMessage(channel=channel_id, thread_ts=ts, text=response)
+        client.chat_postMessage(channel=user_id, thread_ts=ts, text=response)
     
     elif user_text == "delete_event":
         response, max_index = get_response_from_user_schedule(user_id)
@@ -66,7 +71,7 @@ def message(payload):
         else:
             final_response = "Please enter the number of the task you want to delete:\n" + response
             previous_msg = "delete_event"
-        client.chat_postMessage(channel=channel_id, thread_ts=ts, text=final_response)      
+        client.chat_postMessage(channel=user_id, thread_ts=ts, text=final_response)      
     
     elif previous_msg == "delete_event" and (not user_text.startswith("Please")) :
         user_index = int(user_text.strip())
@@ -82,10 +87,10 @@ def message(payload):
             users = db.reference("/Users/")
             users.child(user_id).set(user_data)
             response = "Task deleted successfully"
-            client.chat_postMessage(channel=channel_id, thread_ts=ts, text=response)
+            client.chat_postMessage(channel=user_id, thread_ts=ts, text=response)
         else:
             response = "Invalid number for the task entered"
-            client.chat_postMessage(channel=channel_id, thread_ts=ts, text=response)
+            client.chat_postMessage(channel=user_id, thread_ts=ts, text=response)
         previous_msg = ""
         
 
@@ -142,4 +147,4 @@ def firebase_init():
 
 if __name__ == '__main__':
     firebase_init()
-    app.run(port=5002, debug=True)
+    app.run(port=5005, debug=True)
