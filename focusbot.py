@@ -7,6 +7,7 @@ from firebase_admin import credentials, firestore, initialize_app
 
 import datetime
 import os.path
+import pandas as pd
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -17,6 +18,8 @@ from slack_sdk import WebClient
 import datetime
 from datetime import timedelta, datetime
 from cal_setup import get_calendar_service
+
+from generate import getQuote
 
 SLACK_TOKEN="<SLACK_TOKEN>"
 SIGNING_SECRET="<SIGNING_SECRET>"
@@ -31,6 +34,7 @@ client = WebClient(token=SLACK_TOKEN)
 from slack_sdk.http_retry.builtin_handlers import RateLimitErrorRetryHandler
 rate_limit_handler = RateLimitErrorRetryHandler(max_retry_count=-1) # To prevent duplicate answer
 client.retry_handlers.append(rate_limit_handler)
+
 
 @slack_event_adapter.on('message')
 def message(payload):
@@ -86,6 +90,10 @@ def message(payload):
         service.events().delete(calendarId='primary', eventId=eventId).execute()
         res = "Successfully delete the event"  
         client.chat_postMessage(channel=channel_id, thread_ts=ts, text=res)
+        
+    elif texts[0] == "quote":
+        previous_msg = texts[0]
+        client.chat_postMessage(channel=channel_id, thread_ts=ts, text=quotes())
     # elif texts[0] == "update_event": 
     # [SHEAN] Updating events is necessary?
 
@@ -130,7 +138,8 @@ def parse_result(start_list, event_list):
     return res
 
 def google_calendar():
-    """Shows basic usage of the Google Calendar API.
+    """
+    Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
     creds = None
@@ -158,8 +167,8 @@ def google_calendar():
         now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
         print('Getting the upcoming 10 events')
         events_result = service.events().list(calendarId='primary', timeMin=now,
-                                              maxResults=10, singleEvents=True,
-                                              orderBy='startTime').execute()
+                                            maxResults=10, singleEvents=True,
+                                            orderBy='startTime').execute()
         events = events_result.get('items', [])
 
         if not events:
@@ -181,6 +190,11 @@ def google_calendar():
 
     except HttpError as error:
         print('An error occurred: %s' % error)
+
+
+
+def quotes():
+    getQuote()
 
 
 if __name__ == '__main__':
