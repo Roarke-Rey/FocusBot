@@ -5,25 +5,17 @@ from firebase_admin import credentials, firestore, initialize_app
 
 import datetime
 import os.path
-import pandas as pd
-
+import time
 
 from slack_sdk import WebClient
 from operator import *
 from firebase_admin import credentials, initialize_app
 from firebase_admin import db
 
-
 from generate import getQuote
 
 SLACK_TOKEN="<SLACK_TOKEN>"
 SIGNING_SECRET="<SIGNING_SECRET>"
-
-from generate import getQuote
-
-SLACK_TOKEN="<SLACK_TOKEN>"
-SIGNING_SECRET="<SIGNING_SECRET>"
-
 
 app = Flask(__name__)
 slack_event_adapter = SlackEventAdapter(SIGNING_SECRET, '/slack/events', app)
@@ -35,12 +27,10 @@ client.retry_handlers.append(rate_limit_handler)
 
 
 previous_msg = ""
-
-'''
- TODO - Maybe do the DM for FocusBot? 
- Add schedule support for managers
- Update event?
-'''
+pomo = 2
+bTime = 1
+pomoActive = False
+daily = True
 
 @slack_event_adapter.on('message')
 def message(payload):
@@ -53,6 +43,9 @@ def message(payload):
     text = event.get('text')
     
     ts = event.get('ts') # ts = timestamp
+    while daily:
+        client.chat_postMessage(channel=channel_id, thread_ts=ts, text="Good Morning. Lets get our workday started with a motivational quote"+getQuote())
+        daily = False
     user_text = text
     first_word = text.split()[0]
 
@@ -64,7 +57,7 @@ def message(payload):
         previous_msg = "add_event"
         response = "Please enter the task be added in the format:\nProject_Name,TaskName,DueDate(YYYYMMDD)"
         client.chat_postMessage(channel=user_id, thread_ts=ts, text=response)
-         
+
     elif previous_msg == "add_event" and (not user_text.startswith("Please")):    # The "Please" check because slack double runs the if loop
         if (check_format(text)):
             data = get_data_from_message(text)
@@ -109,7 +102,33 @@ def message(payload):
             response = "Invalid number for the task entered"
             client.chat_postMessage(channel=user_id, thread_ts=ts, text=response)
         previous_msg = ""
-        
+    elif first_word == "quote":
+        previous_msg = first_word
+        client.chat_postMessage(channel=channel_id, thread_ts=ts, text=getQuote())
+    elif first_word == "setpomodoro":
+        previous_msg = first_word
+        client.chat_postMessage(channel=channel_id, thread_ts=ts, text="How long would you like your Pomodoro sprint to be?")
+    elif first_word == "setbreak":
+        previous_msg = first_word
+        client.chat_postMessage(channel=channel_id, thread_ts=ts, text="How long would you like your Pomodoro break to be?")
+    elif first_word == "activate":
+        previous_msg = "activate"
+        client.chat_postMessage(channel=channel_id, thread_ts=ts, text="What function would you like to activate? Available functions are: Pomodoro")
+    elif first_word == "pomodoro":
+        print(previous_msg)
+        if previous_msg == "activate":
+            previous_msg = ""
+            print(previous_msg)
+            pomoActive = True
+            pomodoro(channel_id, ts)
+        elif previous_msg == "deactivate":
+            previous_msg = first_word
+            pomoActive = False
+            client.chat_postMessage(channel=channel_id, thread_ts=ts, text="Pomodoro is deactivated")
+    elif first_word == "deactivate":
+        previous_msg = first_word
+        client.chat_postMessage(channel=channel_id, thread_ts=ts, text="What function would you like to deactivate? Available functions are: Pomodoro")
+
 
 def check_format(message):
     formatted_list = [word.strip() for word in message.split(",")]
@@ -161,16 +180,14 @@ def firebase_init():
     initialize_app(cred, {
         "databaseURL": "https://focusbot-c6cfb-default-rtdb.firebaseio.com/"
     })
-
-
-def quotes():
-    getQuote()
-
-
-
-def quotes():
-    getQuote()
-
+    
+def pomodoro(channel_id, ts):
+    print("pomodoro is active")
+    while pomoActive:
+        client.chat_postMessage(channel=channel_id, thread_ts=ts, text="Starting Pomodoro for "+str(pomo)+" minutes")
+        time.sleep(pomo*60)
+        client.chat_postMessage(channel=channel_id, thread_ts=ts, text="Congratulations on completing a sprint. Take a break for "+str(bTime)+" minutes")
+        time.sleep(bTime*60)
 
 if __name__ == '__main__':
     firebase_init()
