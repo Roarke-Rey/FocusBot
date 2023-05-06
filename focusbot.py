@@ -30,6 +30,10 @@ previous_msg = ""
 pomo = 2
 bTime = 1
 pomoActive = False
+"""
+Currently Daily is set to a Boolean because our code isnt permanently hosted. We implement
+a function to set the time later on but it would have to be edited when permanently hosted
+"""
 daily = True
 
 @slack_event_adapter.on('message')
@@ -43,6 +47,8 @@ def message(payload):
     text = event.get('text')
     
     ts = event.get('ts') # ts = timestamp
+    #if(daily = time.asctime(time.localtime(time.time()))):
+    #    client.chat_postMessage(channel=channel_id, thread_ts=ts, text="Good Morning. Lets get our workday started with a motivational quote"+getQuote())    
     while daily:
         client.chat_postMessage(channel=channel_id, thread_ts=ts, text="Good Morning. Lets get our workday started with a motivational quote"+getQuote())
         daily = False
@@ -105,17 +111,16 @@ def message(payload):
     elif first_word == "quote":
         previous_msg = first_word
         client.chat_postMessage(channel=channel_id, thread_ts=ts, text=getQuote())
-    elif first_word == "setpomodoro":
+    elif first_word == "set_pomodoro":
         previous_msg = first_word
         client.chat_postMessage(channel=channel_id, thread_ts=ts, text="How long would you like your Pomodoro sprint to be?")
-    elif first_word == "setbreak":
+    elif first_word == "set_break":
         previous_msg = first_word
         client.chat_postMessage(channel=channel_id, thread_ts=ts, text="How long would you like your Pomodoro break to be?")
     elif first_word == "activate":
         previous_msg = "activate"
         client.chat_postMessage(channel=channel_id, thread_ts=ts, text="What function would you like to activate? Available functions are: Pomodoro")
     elif first_word == "pomodoro":
-        print(previous_msg)
         if previous_msg == "activate":
             previous_msg = ""
             print(previous_msg)
@@ -128,7 +133,21 @@ def message(payload):
     elif first_word == "deactivate":
         previous_msg = first_word
         client.chat_postMessage(channel=channel_id, thread_ts=ts, text="What function would you like to deactivate? Available functions are: Pomodoro")
+    elif first_word == "set_daily":
+        previous_msg = first_word
+        client.chat_postMessage(channel=channel_id, thread_ts=ts, text="What time would you like the daily message to be sent (in HH:MM:SS format)?")
+    elif previous_msg == "set_daily" and (not user_text.startswith("Please")):
+        if (check_time(text)):
+            pass
+            """
+            daily = text
+            """
 
+
+def check_time(message):
+    time_list = [word for word in message.split(":")]
+    return len(time_list) == 3
+    
 
 def check_format(message):
     formatted_list = [word.strip() for word in message.split(",")]
@@ -182,7 +201,6 @@ def firebase_init():
     })
 
 def pomodoro(channel_id, ts):
-    print("pomodoro is active")
     while pomoActive:
         client.chat_postMessage(channel=channel_id, thread_ts=ts, text="Starting Pomodoro for "+str(pomo)+" minutes")
         time.sleep(pomo*60)
