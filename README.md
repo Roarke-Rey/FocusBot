@@ -27,3 +27,7 @@ FocusBot is a Slack bot designed to assist users in efficiently managing their s
 ## How To Run FocusBot
 ## How To Run Test
 ## Example
+### As a Team Manager
+
+### As a Team Member
+
