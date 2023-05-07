@@ -5,7 +5,7 @@ FocusBot is a Slack bot designed to assist users in efficiently managing their s
 
 ## Properties
 * Schedule management 
- * add/update/delete tasks
+    * add/update/delete tasks
  * all personal schedules at a glance
 * Manager view
 * Motivational quote every day
