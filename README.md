@@ -30,9 +30,11 @@ FocusBot is a Slack bot designed to assist users in efficiently managing their s
 ### As a Team Manager
 1) Send a direct message to FocusBot with the word ***schedule*** 
 2) FocusBot will display a list of all the projects you can access, along with the following message
+
 *Please select the number for the project you want to see the schedule for:
 [1] First Project
 [2] FocusBot*
+
 3) You should select the number of the project that you would like to monitor
 4) FocusBot will show the schedules of all team members who are included in that project
 <img width="388" alt="Screenshot 2023-05-06 at 10 05 51 PM" src="https://user-images.githubusercontent.com/122955570/236653943-12c64594-e5c6-49bc-8f30-4df599d39acc.png">
