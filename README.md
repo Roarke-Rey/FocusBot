@@ -59,29 +59,38 @@ User: U051B4PF5JM
 1) Send a direct message to FocusBot with the word ***schedule*** 
 2) FocusBot will display all of your schedules
 ```
-[1] Task: Finish Report    Due Date: 20230505
-[2] Task: Demo    Due Date: 20230506
+[1] Project: FocusBot    Task: Finish Report    Due Date: 20230505
+[2] Project: FocusBot    Task: Demo    Due Date: 20230506
 ```
+<img width="652" alt="image" src="https://user-images.githubusercontent.com/57321224/236655268-3976e2b0-3377-4364-85fa-56e1fe42dc26.png">
+
 #### Add a Schedule
 1) Send a direct message to FocusBot with the word ***add_event*** 
-2) FocusBot will display a list of all the projects you can access, along with the following message
+2) Enter the task next in accordance to the format
 ```
 Please enter the task be added in the format: 
 Project_Name,TaskName,DueDate(YYYYMMDD)
 ```
+
 3) You should type the schedule that you want to add
 ```
-ex) FocusBot Meeting,FocusBot,20230505
+ex) FocusBot, Unit Test Development, 20230509
 ```
 4) FocusBot will add your schedule, along with the following message
 ```
 Added the task successfully
 ```
+<img width="652" alt="image" src="https://user-images.githubusercontent.com/57321224/236655335-1a2e322a-bce6-4e16-9e6e-14abd35122f7.png">
+
 #### Delete a Schedule
 1) Send a direct message to FocusBot with the word ***delete_event*** 
 2) FocusBot will display all of your schedules and ask you which one you would like to delete, along with the following message
 ```
 Please enter the number of the task you want to delete:
-[1] Task: Finish Report    Due Date: 20230505
-[2] Task: Demo    Due Date: 20230506
+[1] Project: FocusBot    Task: Finish Report    Due Date: 20230505
+[2] Project: FocusBot    Task: Demo    Due Date: 20230506
+[3] Project: FocusBot    Task: Unit Test Development    Due Date: 20230509
+```
+<img width="652" alt="image" src="https://user-images.githubusercontent.com/57321224/236655357-eeedfd81-ef86-4dc6-8994-ab2bc9cbd976.png">
+
 ```
