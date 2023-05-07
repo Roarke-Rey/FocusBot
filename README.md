@@ -34,8 +34,8 @@ python test.py
 1) Send a direct message to FocusBot with the word ***schedule*** 
 2) FocusBot will display a list of all the projects you can access, along with the following message
 ```
-Please select the number for the project you want to see the schedule for:<br />
-[1] First Project<br />
+Please select the number for the project you want to see the schedule for:
+[1] First Project
 [2] FocusBot
 [3] ...
 ```
