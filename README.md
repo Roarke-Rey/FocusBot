@@ -6,7 +6,7 @@ FocusBot is a Slack bot designed to assist users in efficiently managing their s
 ## Properties
 * Schedule management 
     * add/update/delete tasks
- * all personal schedules at a glance
+    * all personal schedules at a glance
 * Manager view
 * Motivational quote every day
 * Pomodoro techniques
@@ -14,15 +14,15 @@ FocusBot is a Slack bot designed to assist users in efficiently managing their s
 ## Developers
 * Team: Focused Engineers
 * Team Members
- * ANDREW JELSON
-  * jelson9854@vt.edu
-  * Jelson9854
- * SHEAN KIM 
-  * shean@vt.edu
-  * Shean50
+    * ANDREW JELSON    
+        * Email: jelson9854@vt.edu
+        * Github ID: Jelson9854
+ * SHEAN KIM
+        * Email: shean@vt.edu
+        * Github ID: Shean50
  * SHREYAS PAWAR 
-  * shreyaspawar@vt.edu
-  * Roarke-Rey
+        * Email: shreyaspawar@vt.edu
+        * Github ID: Roarke-Rey
  
 ## How To Run FocusBot
 ## How To Run Test
