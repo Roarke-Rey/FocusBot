@@ -26,7 +26,7 @@ FocusBot is a Slack bot designed to assist users in efficiently managing their s
 *  Our Trello board is found at https://trello.com/b/kkHaxukr/focussed-engineers
  
 ## How To Run FocusBot
-Start by cloning the github and using ***pip install -rrequirements.txt***
+Start by cloning the github and using ***pip install -r requirements.txt***
 Running FocusBot requires the code owner to have a signing secret to add the bot to the server (we will email it to you becuase the secret gets taken off of GitHub). After obtaining the signing secret, you have to run a ngrok environment. Download ngrok and run the command ***ngrok http 5005***. Copy the forwarding address paste it in the slack API Event Subscriptions Request URL and add /slack/events (we will also email our slackAPI login). From there you can run install the bot onto your workspace and the bot will run properly 
 ## How To Run Test
 Our test file is test.py. Running test.py will perform the assert statements to check that the bot is running properly.
