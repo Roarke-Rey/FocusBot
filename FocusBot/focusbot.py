@@ -311,7 +311,7 @@ def firebase_init():
     '''
     Initializes the firebase database for the project
     '''
-    cred = credentials.Certificate("firebase_credentials.json")
+    cred = credentials.Certificate("Firebase/firebase_credentials.json")
     initialize_app(cred, {
         "databaseURL": "https://focusbot-c6cfb-default-rtdb.firebaseio.com/"
     })
