@@ -46,8 +46,31 @@ Please select the number for the project you want to see the schedule for:
 ### As a Team Member
 #### View All Personal Schedules
 1) Send a direct message to FocusBot with the word ***schedule*** 
+2) FocusBot will display all of your schedules
+```
+[1] Task: Finish Report    Due Date: 20230505
+[2] Task: Demo    Due Date: 20230506
+```
 #### Add a Schedule
 1) Send a direct message to FocusBot with the word ***add_event*** 
+2) FocusBot will display a list of all the projects you can access, along with the following message
+```
+Please enter the task be added in the format: 
+Project_Name,TaskName,DueDate(YYYYMMDD)
+```
+3) You should type the schedule that you want to add
+```
+ex) FocusBot Meeting,FocusBot,20230505
+```
+4) FocusBot will add your schedule, along with the following message
+```
+Added the task successfully
+```
 #### Delete a Schedule
 1) Send a direct message to FocusBot with the word ***delete_event*** 
-
+2) FocusBot will display all of your schedules and ask you which one you would like to delete, along with the following message
+```
+Please enter the number of the task you want to delete:
+[1] Task: Finish Report    Due Date: 20230505
+[2] Task: Demo    Due Date: 20230506
+```
