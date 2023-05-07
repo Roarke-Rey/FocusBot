@@ -17,10 +17,10 @@ FocusBot is a Slack bot designed to assist users in efficiently managing their s
     * ANDREW JELSON    
         * Email: jelson9854@vt.edu
         * Github ID: Jelson9854
- * SHEAN KIM
+    * SHEAN KIM
         * Email: shean@vt.edu
         * Github ID: Shean50
- * SHREYAS PAWAR 
+    * SHREYAS PAWAR 
         * Email: shreyaspawar@vt.edu
         * Github ID: Roarke-Rey
  
