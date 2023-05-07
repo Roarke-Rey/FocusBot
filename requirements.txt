@@ -1,1 +1,5 @@
 firebase_admin
+flask
+slackeventsapi
+slack_sdk
+pandas

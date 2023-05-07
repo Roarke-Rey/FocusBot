@@ -23,12 +23,14 @@ FocusBot is a Slack bot designed to assist users in efficiently managing their s
     * SHREYAS PAWAR 
         * Email: shreyaspawar@vt.edu
         * Github ID: Roarke-Rey
+*  Our Trello board is found at https://trello.com/b/kkHaxukr/focussed-engineers
  
 ## How To Run FocusBot
+Start by cloning the github and using ***pip install -rrequirements.txt***
+Running FocusBot requires the code owner to have a signing secret to add the bot to the server (we will email it to you becuase the secret gets taken off of GitHub). After obtaining the signing secret, you have to run a ngrok environment. Download ngrok and run the command ***ngrok http 5005***. Copy the forwarding address paste it in the slack API Event Subscriptions Request URL and add /slack/events (we will also email our slackAPI login). From there you can run install the bot onto your workspace and the bot will run properly 
 ## How To Run Test
-```
-python test.py
-```
+Our test file is test.py. Running test.py will perform the assert statements to check that the bot is running properly.
+
 ## Example
 ### As a Team Manager
 1) Send a direct message to FocusBot with the word ***schedule*** 
@@ -93,4 +95,11 @@ Please enter the number of the task you want to delete:
 ```
 <img width="652" alt="image" src="https://user-images.githubusercontent.com/57321224/236655357-eeedfd81-ef86-4dc6-8994-ab2bc9cbd976.png">
 
-```
+#### How to use Pomodoro
+1) Send a direct message to FocusBot with the command ***set_pomodoro*** to set the length of your sprint
+2) Send a direct message to FocusBot with the command ***set_break*** to set the length of your break
+3) Send a direct message to FocusBot with the command ***activate*** to get a list of activatable functions (Pomodoro is the only one implemented right now)
+4) Send a direct message to FocusBot with the command ***pomodoro*** to have the bot run for your sprint and break time
+5) Send a direct message to FocusBot with the command ***deactivate*** to get a list of activatable functions (Pomodoro is the only one implemented right now)
+6) Send a direct message to FocusBot with the command ***pomodoro*** and the bot will stop pomodoro at the end of the next break time.
+
