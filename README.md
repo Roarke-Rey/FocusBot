@@ -40,7 +40,18 @@ Please select the number for the project you want to see the schedule for:
 [3] ...
 ```
 3) You should select the number of the project that you would like to monitor
+```
+ex) 2
+```
 4) FocusBot will show the schedules of all team members who are included in that project
+```
+Found these tasks for the following users for project FocusBot
+User: U056BJX4T1C
+[1] Task: Demo    Due Date: 20230506
+User: U051B4PF5JM
+[1] Task: Finish Report    Due Date: 20230505
+[2] Task: Demo    Due Date: 20230506
+```
 <img width="388" alt="Screenshot 2023-05-06 at 10 05 51 PM" src="https://user-images.githubusercontent.com/122955570/236653943-12c64594-e5c6-49bc-8f30-4df599d39acc.png">
 
 ### As a Team Member
